@@ -10,14 +10,6 @@ Cabal-Version: >= 1.2
 Build-type: Simple
 tested-with: GHC == 7.6.3
 
-library
-  hs-source-dirs: src/
-  Exposed-modules: Syntax
-                   Parser
-                   TypeCheck
-                   Main
-  Build-depends:  base >= 4
-
 executable pi-forall
   hs-source-dirs: src/
   Main-is: Main.hs
@@ -34,5 +26,3 @@ executable pi-forall
                  HUnit,
                  QuickCheck
   Ghc-Options:  -Wall -fno-warn-unused-matches
-
-
