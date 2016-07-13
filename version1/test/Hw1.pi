@@ -23,10 +23,8 @@ eq_bool = \ b1 b2 .
 
 -- sigma types
 
-{-
 double : (A:Type) -> (x : A) -> { x : A | A }
-double = \A x. (x,x)
+double = \A x. (x, x)
 
 fst : (A:Type) -> (B : A -> Type) -> { x : A | B x } -> A
-fst = \A B p. pcase p of (x0,y) -> x0
--}
+fst = \A B p. pcase p of (x0, y) -> x0

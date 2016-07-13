@@ -136,7 +136,7 @@ tcTerm t@(If t1 t2 t3 ann1) ann2 = do
   return (at3, t3Ty)
 
 
-tcTerm (Let bnd) ann =   err [DS "unimplemented"]
+tcTerm (Let bnd) ann =   err [DS "unimplemented Let"]
 
 
 
@@ -146,11 +146,50 @@ tcTerm (Let bnd) ann =   err [DS "unimplemented"]
 
 
 
-tcTerm t@(Sigma bnd) Nothing = err [DS "unimplemented"]
+tcTerm t@(Sigma bnd) Nothing = do
+  ((x, (unembed -> tyA)), tyB) <- unbind bnd
+  -- check that tyA is well-formed
+  atyA <- tcType tyA
+  -- check that tyB is well-formed
+  atyB <- extendCtx (Sig x atyA) (tcType tyB)
+  return (Sigma (bind (x, embed atyA) atyB), Type)
 
-tcTerm t@(Prod a b ann1) ann2 = err [DS "unimplemented"]
 
-tcTerm t@(Pcase p bnd ann1) ann2 = err [DS "unimplemented"]
+tcTerm t@(Prod a b (Annot Nothing)) (Just ty) =
+  case ty of
+    (Sigma bnd) -> do
+      ((x, (unembed -> tyA)), tyB) <- unbind bnd
+      (a', _) <- checkType a tyA
+      (b', _) <- extendCtxs [Sig x tyA, Def x a'] (checkType b tyB)
+      return (Prod a' b' (Annot (Just ty)), ty)
+    _ -> err [DS "Product does not have Sigma type", DD t,
+              DS "Has following type instead: ", DD ty]
+
+tcTerm t@(Prod a b (Annot _)) (Just _) =
+  err [ DS "Products in source are not expected to have type annotations"
+      , DD t]
+
+tcTerm t@(Prod a b _) Nothing =
+  err [ DS "Products are expected to be checked against a type"
+      , DD t]
+
+tcTerm t@(Pcase p bnd (Annot Nothing)) (Just ty) = do
+  (p', pTy) <- inferType p
+  -- evaluate pTy?
+  case pTy of
+    (Sigma bnd') -> do
+      ((x, (unembed -> tyA)), tyB) <- unbind bnd'
+      ((a, b), body) <- unbind bnd
+      (body', bodyTy) <- extendCtxs ([Sig a tyA, Sig b tyB]) (checkType body ty)
+      return (Pcase p' (bind (a, b) body') (Annot (Just ty)), bodyTy)
+    _ -> err [DD p, DS " does not have Sigma", DS "Instead has type ", DD pTy]
+
+tcTerm t@(Pcase p bnd (Annot _)) (Just ty) = 
+  err [ DS "pcase in source are not expected to have type annotations" , DD t]
+
+tcTerm t@(Pcase p bnd _) Nothing = 
+  err [ DS "pcase in are expected to be checked against a type" , DD t]
+
 
 tcTerm tm (Just ty) = do
   (atm, ty') <- inferType tm
