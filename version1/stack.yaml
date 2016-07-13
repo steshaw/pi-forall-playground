@@ -5,12 +5,10 @@ resolver: lts-6.7
 
 # Local packages, usually specified by relative directory name
 packages:
-- '.'
+  - '.'
 
 # Packages to be pulled from upstream that are not in the resolver (e.g., acme-missiles-0.3)
 extra-deps:
-  - unbound-0.4.4
-  - RepLib-0.5.3.5
 
 # Override default flag values for local packages and extra-deps
 flags: {}
