@@ -40,11 +40,11 @@ import GHC.Generics (Generic)
 import Data.Typeable (Typeable)
 
 import Unbound.Generics.LocallyNameless
-import Unbound.Generics.LocallyNameless.Unsafe (unsafeUnbind)
+-- import Unbound.Generics.LocallyNameless.Unsafe (unsafeUnbind)
 import Unbound.Generics.LocallyNameless.TH (makeClosedAlpha)
 import Text.ParserCombinators.Parsec.Pos       
-import Data.Set (Set)
-import qualified Data.Set as S
+-- import Data.Set (Set)
+-- import qualified Data.Set as S
 import Data.Maybe (fromMaybe)
 
 -----------------------------------------
