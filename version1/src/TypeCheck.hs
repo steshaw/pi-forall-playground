@@ -128,13 +128,11 @@ tcTerm (TyBool) Nothing = return (TyBool, Type)
 tcTerm (LitBool b) Nothing = return (LitBool b, TyBool)
 
 tcTerm t@(If t1 t2 t3 ann1) ann2 = do
+  ty <- matchAnnots t ann1 ann2
   (at1, _) <- checkType t1 TyBool
-  (at2, t2Ty) <- inferType t2
-  (at3, t3Ty) <- inferType t3
-  unless (aeq t2Ty t3Ty) $ err [DS "Types in then and else clauses do not match",
-                                DD t2Ty, DS "and", DD t3Ty]
-  return (at3, t3Ty)
-
+  (at2, t2Ty) <- checkType t2 ty
+  (at3, t3Ty) <- checkType t3 ty
+  return (If at1 at2 at3 (Annot (Just ty)), ty)
 
 tcTerm (Let bnd) ann =   err [DS "unimplemented Let"]
 
