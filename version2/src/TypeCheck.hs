@@ -126,8 +126,7 @@ tcTerm (LitUnit) Nothing = return (LitUnit, TyUnit)
 tcTerm (TyBool) Nothing = return (TyBool,Type)
   
   
-tcTerm (LitBool b) Nothing = do
-  return (LitBool b, TyBool)
+tcTerm (LitBool b) Nothing = return (LitBool b, TyBool)
   
   
 tcTerm t@(If t1 t2 t3 ann1) ann2 = do
