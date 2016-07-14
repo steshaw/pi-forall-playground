@@ -76,7 +76,7 @@ data Term =
    -- basic language
      Type                               -- ^ type of types
    | Var TName                          -- ^ variables      
-   | Lam (Bind (TName, Embed Annot) Term)             
+   | Lam (Bind (TName, Embed Annot) Term)
                                         -- ^ abstraction    
    | App Term Term                      -- ^ application    
    | Pi (Bind (TName, Embed Term) Term) -- ^ function type
@@ -253,4 +253,3 @@ instance Subst Term Term where
 
 
 instance Subst Term Annot
-
