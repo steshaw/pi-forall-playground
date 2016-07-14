@@ -121,7 +121,7 @@ inside them.
     instance Subst Term Annot
 #+end_src
 
-For more information about unbound, see [[https://code.google.com/p/replib/source/browse/trunk/Unbound/tutorial/Tutorial.lhs][The Unbound Tutorial]] and the [[http://hackage.haskell.org/package/unbound-0.4.3.1][unbound
+For more information about unbound, see [[https://github.com/sweirich/replib/blob/master/Unbound/tutorial/Tutorial.lhs][The Unbound Tutorial]] and the [[http://hackage.haskell.org/package/unbound][unbound
 hackage page]].
 
 ** A TypeChecking monad [Environment.hs]
