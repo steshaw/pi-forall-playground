@@ -193,7 +193,8 @@ tcTerm t@(Pcase p bnd _) Nothing =
 
 tcTerm tm (Just ty) = do
   (atm, ty') <- inferType tm
-  unless (aeq ty' ty) $ err [DS "Types don't match", DD ty, DS "and", DD ty']
+  equate ty ty'
+--  unless (aeq ty' ty) $ err [DS "Types don't match", DD ty, DS "and", DD ty']
   return (atm, ty)
 
 
