@@ -305,51 +305,44 @@ system. What do they look like?
 
 Well, they involve applications of explicit lambda terms:
 
-#+begin_example
-       ⊢ \x.x : bool -> bool     ⊢ true : bool
-      ------------------------------------------  app
-       ⊢ (\x.x) true : bool
-#+end_example
+:      ⊢ \x. x : bool -> bool    ⊢ true : bool
+:     ───────────────────────────────────────── app
+:               ⊢ (\x. x) true : bool
 
-This term doesn't type check in the bidirectional system because
-application requires the function to have an inferable type, but lambdas
-don't.
+This term doesn't type check in the bidirectional system because application
+requires the function to have an inferable type, but lambdas don't.
 
-However, there is not that much need to write such terms in programs. We
-can always replace them with something equivalent by doing the
-beta-reduction (in this case, just true).
+However, there is not that much need to write such terms in programs. We can
+always replace them with something equivalent by doing the beta-reduction (in
+this case, just true).
 
-In fact, the bidirectional type system has the property that it only
-checks terms in /normal/ form, i.e. those that do not contain any
-reductions. If we would like to add non-normal forms to our language, we
-can add annotations:
+In fact, the bidirectional type system has the property that it only checks
+terms in /normal/ form, i.e. those that do not contain any reductions. If we
+would like to add non-normal forms to our language, we can add annotations:
 
-#+begin_example
-        Γ ⊢ a <= A 
-      ------------------ annot
-      Γ ⊢ (a : A) => A
-#+end_example
+:         Γ ⊢ a <= A
+:     ────────────────── annot
+:      Γ ⊢ (a : A) => A
 
-The nice thing about the bidirectional system is that it reduces the
-number of annotations that are necessary in programs that we want to
-write. As we will see, checking mode will be even more important as we
-add more terms to the language.
+The nice thing about the bidirectional system is that it reduces the number of
+annotations that are necessary in programs that we want to write. As we will
+see, checking mode will be even more important as we add more terms to the
+language.
 
-A not so desirable property is that the bidirectional system is not
-closed under substitution. The types of variables are always inferred.
-This is particularly annoying for the application rule when we replace a
-variable (inference mode) with another term that is correct only in
-checking mode. One solution to this problem is to work with /hereditary
-substitutions/, i.e. substitutions that preserve normal forms.
+A not so desirable property is that the bidirectional system is not closed under
+substitution. The types of variables are always inferred. This is particularly
+annoying for the application rule when we replace a variable (inference mode)
+with another term that is correct only in checking mode. One solution to this
+problem is to work with /hereditary substitutions/, i.e. substitutions that
+preserve normal forms.
 
-Alternatively, we can solve the problem through /elaboration/, the
-output of a type checker will be a term that works purely in inference
-mode.
+Alternatively, we can solve the problem through /elaboration/, the output of a
+type checker will be a term that works purely in inference mode.
 
-*** References
+** References
 
 -  Cardelli, [[http://www.hpl.hp.com/techreports/Compaq-DEC/SRC-RR-10.pdf][A polymorphic lambda calculus with Type:Type]]
 -  Augustsson, [[http://dl.acm.org/citation.cfm?id=289451][Cayenne -- a Language With Dependent Types]]
 -  A. Löh, C. McBride, W. Swierstra, [[http://www.andres-loeh.de/LambdaPi/][A tutorial implementation of a dependently
-   typed lambda calculus]]
+  typed lambda calculus]]
 -  Andrej Bauer, [[http://math.andrej.com/2012/11/08/how-to-implement-dependent-type-theory-i/][How to implement dependent type theory]]
