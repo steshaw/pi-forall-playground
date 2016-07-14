@@ -2,4 +2,4 @@
 	pandoc --self-contained -o $@ $<
 
 .PHONY:
-all: notes1.html
+all: $(patsubst %.org,%.html,$(wildcard *.org))
