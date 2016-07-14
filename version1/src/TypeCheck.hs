@@ -147,11 +147,11 @@ tcTerm (Let bnd) ann =   err [DS "unimplemented Let"]
 
 
 tcTerm t@(Sigma bnd) Nothing = do
-  ((x, (unembed -> tyA)), tyB) <- unbind bnd
+  ((x, unembed -> tyA), tyB) <- unbind bnd
   -- check that tyA is well-formed
   atyA <- tcType tyA
   -- check that tyB is well-formed
-  atyB <- extendCtx (Sig x atyA) (tcType tyB)
+  atyB <- extendCtx (Sig x atyA) $ tcType tyB
   return (Sigma (bind (x, embed atyA) atyB), Type)
 
 
@@ -193,8 +193,7 @@ tcTerm t@(Pcase p bnd _) Nothing =
 
 tcTerm tm (Just ty) = do
   (atm, ty') <- inferType tm
-  equate ty ty'
---  unless (aeq ty' ty) $ err [DS "Types don't match", DD ty, DS "and", DD ty']
+  equate ty' ty
   return (atm, ty)
 
 

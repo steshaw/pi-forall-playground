@@ -208,13 +208,15 @@ tcTerm t@(Contra p ann1) ann2 = do
                   DS "are contradictory"]
 
     
-tcTerm t@(Sigma bnd) Nothing = do        
-  ((x,unembed->tyA),tyB) <- unbind bnd
-  aa <- tcType tyA
-  ba <- extendCtx (Sig x aa) $ tcType tyB
-  return (Sigma (bind (x,embed aa) ba), Type)
-  
-  
+tcTerm t@(Sigma bnd) Nothing = do
+  ((x, unembed -> tyA), tyB) <- unbind bnd
+  -- check that tyA is well-formed
+  atyA <- tcType tyA
+  -- check that tyB is well-formed
+  atyB <- extendCtx (Sig x atyA) $ tcType tyB
+  return (Sigma (bind (x, embed atyA) atyB), Type)
+
+
 tcTerm t@(Prod a b ann1) ann2 = do
   ty <- matchAnnots t ann1 ann2
   case ty of
