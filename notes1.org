@@ -342,7 +342,7 @@ type checker will be a term that works purely in inference mode.
 ** References
 
 -  Cardelli, [[http://www.hpl.hp.com/techreports/Compaq-DEC/SRC-RR-10.pdf][A polymorphic lambda calculus with Type:Type]]
--  Augustsson, [[http://dl.acm.org/citation.cfm?id=289451][Cayenne -- a Language With Dependent Types]]
+-  Augustsson, [[http://fsl.cs.illinois.edu/images/5/5e/Cayenne.pdf][Cayenne -- a Language With Dependent Types]]
 -  A. Löh, C. McBride, W. Swierstra, [[http://www.andres-loeh.de/LambdaPi/][A tutorial implementation of a dependently
   typed lambda calculus]]
 -  Andrej Bauer, [[http://math.andrej.com/2012/11/08/how-to-implement-dependent-type-theory-i/][How to implement dependent type theory]]
