@@ -1,2 +1,63 @@
 module Lec1 where
 
+-- ────────────────────────────────────────────────────────────────────
+-- identity function
+-- ────────────────────────────────────────────────────────────────────
+id : (A : Type) -> (x : A) -> A
+id = \A. \x. x
+
+-- Apply identity to identity.
+idid : ((A : Type) -> (y : A) -> A)
+idid = id ((A : Type) -> (y : A) -> A) id
+
+-- ────────────────────────────────────────────────────────────────────
+-- Church encoded booleans
+-- ────────────────────────────────────────────────────────────────────
+{-
+data Boolean = false | true
+
+bool_case : Boolean -> {A : Type} -> A -> A -> A
+bool_case b whenT whenF =
+  case b of
+    false => whenT
+    true  => whenF
+-}
+
+Boolean : Type
+Boolean = (A : Type) -> A -> A -> A
+
+true : Boolean
+true = \A. \f. \t. t
+
+false : Boolean
+false = \A. \f. \t. f
+
+cond : Boolean -> (A : Type) -> A -> A -> A
+cond = \b. b
+
+cond' : Boolean -> (A : Type) -> A -> A -> A
+cond' = id Boolean
+
+cond'' : Boolean -> Boolean
+cond'' = id Boolean
+
+-- ────────────────────────────────────────────────────────────────────
+-- Church encoded logical `and`. i.e. product types.
+-- ────────────────────────────────────────────────────────────────────
+and : Type -> Type -> Type
+and = \P. \Q. (C : Type) -> (P -> Q -> C) -> C
+
+conj : (P : Type) -> (Q : Type) -> P -> Q -> and P Q
+conj = \P. \Q. \p. \q. \c. \f. f p q
+
+proj₁ : (P : Type) -> (Q : Type) -> and P Q -> P
+proj₁ = \P. \Q. \a. a P (\p. \q. p)
+
+proj₂ : (P : Type) -> (Q : Type) -> and P Q -> Q
+proj₂ = \P. \Q. \a. a Q (\p. \q. q)
+
+and_commutes : (P : Type) -> (Q : Type) -> and P Q -> and Q P
+and_commutes = \P. \Q. \a. conj Q P (proj₂ P Q a) (proj₁ P Q a)
+
+and_commutes' : (P : Type) -> (Q : Type) -> and P Q -> and Q P
+and_commutes' = \P. \Q. \a. a (and Q P) (\p. \q. conj Q P q p)
