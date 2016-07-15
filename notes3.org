@@ -123,8 +123,10 @@ alpha-equivalence. But we can do better:
 
 We'd like to make sure that our relation /contains beta-equivalence/:
 
-:     ────────────────────────── beta
-:      Γ ⊢ (\x. a) b = a {b / x}
+#+begin_example
+    ────────────────────────── beta
+     Γ ⊢ (\x. a) b = a {b / x}
+#+end_example
 
 (with similar rules for if/sigmas if we have them).
 
