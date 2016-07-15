@@ -38,7 +38,7 @@ might see in Haskell or ML, such as =Bool=, =Void= and =Nat=.
 For example, one homework assignment was to implement booleans. Once we have
 booleans then we can
 
-#+begin_src agda
+#+begin_src haskell
 data Bool : Type where
   True
   False
@@ -47,7 +47,7 @@ data Bool : Type where
 In the homework assignment, we used =if= as the elimination form for boolean
 values.
 
-#+begin_src agda
+#+begin_src haskell
 not : Bool -> Bool
 not = \b. if b then False else True
 #+end_src
@@ -57,7 +57,7 @@ For uniformity, we'll have a common elimination form for all datatypes, called
 expressions, including layout.) For example, we might rewrite =not= with case
 like this:
 
-#+begin_src agda
+#+begin_src haskell
 not : Bool -> Bool
 not = \b.
   case b of
@@ -69,14 +69,14 @@ not = \b.
 
 The simplest datatype of all is one that has no constructors!
 
-#+begin_src agda
+#+begin_src haskell
 data Void : Type where {}
 #+end_src
 
 Because there are no constructors, the elimination form for values of this type
 doesn't need any cases!
 
-#+begin_src agda
+#+begin_src haskell
 false_elim : (A : Type) -> Void -> A
 false_elim = \A v. case v of {}
 #+end_src
@@ -89,7 +89,7 @@ whether there are enough patterns so that all of the cases are covered?
 Natural numbers include a data constructor with an argument. For simplicity in
 the parser, those parens must be there.
 
-#+begin_src agda
+#+begin_src haskell
 data Nat : Type where
   Zero
   Succ of (Nat)
@@ -97,7 +97,7 @@ data Nat : Type where
 
 In case analysis, we can give a name to that argument in the pattern.
 
-#+begin_src agda
+#+begin_src haskell
 is_zero : Nat -> Bool
 is_zero = \x. case x of
   Zero -> True
@@ -486,39 +486,34 @@ chapter of Software Foundations]] to pi-forall. See
 [[soln/test/Logic.pi][Logic.pi]] for a start.
 
 *** Homework: Indexed datatypes: finite numbers in =Fin1.pi=
-    :PROPERTIES:
-    :CUSTOM_ID: homework-indexed-datatypes-finite-numbers-in-fin1.pi
-    :END:
 
-The module =Fin1.pi= declares the type of numbers that are drawn from
-some bounded set. For example, the type =Fin 1= only includes 1 number
-(called Zero), =Fin 2= includes 2 numbers, etc. More generally, =Fin n=
-is the type of all natural numbers smaller than =n=, i.e. of all valid
-indices for lists of size =n=.
+The module =Fin1.pi= declares the type of numbers that are drawn from some
+bounded set. For example, the type =Fin 1= only includes 1 number (called Zero),
+=Fin 2= includes 2 numbers, etc. More generally, =Fin n= is the type of all
+natural numbers smaller than =n=, i.e. of all valid indices for lists of size
+=n=.
 
-In
-[[http://www.cse.chalmers.se/~nad/repos/lib/src/Data/Fin.agda][Agda]],
-we might declare these numbers as:
+In [[http://www.cse.chalmers.se/~nad/repos/lib/src/Data/Fin.agda][Agda]], we
+might declare these numbers as:
 
-#+BEGIN_EXAMPLE
-    data Fin : ℕ → Set where
-       zero : {n : ℕ} → Fin (suc n)
-       suc  : {n : ℕ} (i : Fin n) → Fin (suc n)
-#+END_EXAMPLE
+#+begin_src agda
+data Fin : ℕ → Set where
+  zero : {n : ℕ} → Fin (suc n)
+  suc  : {n : ℕ} (i : Fin n) → Fin (suc n)
+#+end_src
 
 In pi-forall, this corresponding definition makes the constraints
 explicit:
 
-#+BEGIN_EXAMPLE
-    data Fin (n : Nat) : Type where
-       Zero of (m:Nat)[n = Succ m] 
-       Succ of (m:Nat)[n = Succ m] (Fin m)
-         
-#+END_EXAMPLE
+#+begin_src haskell
+data Fin (n : Nat) : Type where
+  Zero of (m : Nat)[n = Succ m] 
+  Succ of (m : Nat)[n = Succ m] (Fin m)
+#+end_src
 
-The file [[soln/test/Fin1.pi][Fin1.pi]] includes a number of definitions
-that use these types. However, there are some =TRUSTME=s. Replace these
-with the actual definitions.
+The file [[full/test/Fin1.pi]] includes a number of definitions that use these
+types. However, there are some =TRUSTME=s. Replace these with the actual
+definitions.
 
 ** References
 
@@ -553,7 +548,7 @@ erasable arguments. We mark forall quantified arguments with brackets. For
 example, we can mark the type argument of the polymorphic identity function as
 erasable.
 
-#+begin_src agda
+#+begin_src haskell
 id : [x:Type] -> (y : x) -> x
 id = \[x] y. y
 #+end_src
@@ -561,14 +556,14 @@ id = \[x] y. y
 When we apply such functions, we'll put the argument in brackets too, so we
 remember that =id= is not really using that type.
 
-#+begin_src agda
+#+begin_src haskell
 t = id [Bool] True
 #+end_src
 
 However, we need to make sure that erasable arguments really are eraseable. We
 wouldn't want to allow this definition:
 
-#+begin_src agda
+#+begin_src haskell
 id' : [x:Type] -> [y:x] -> x
 id' = \[x][y]. y
 #+end_src
@@ -588,7 +583,7 @@ We need to make sure that x is not "used" in the body.
 What is a use? Does a type annotation count? Does it change the runtime behavior
 of the program?
 
-#+begin_src agda
+#+begin_src haskell
 m : [x:Type] -> (y:x) -> x
 m = \[x] y . (y : x)
 #+end_src
