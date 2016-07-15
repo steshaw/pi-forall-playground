@@ -227,16 +227,22 @@ that reduces a type to its /weak head normal form/ (WHNF). Such terms have done
 all of the reductions to the outermost lambda abstraction (or pi) but do not
 reduce subterms. In other words:
 
-:     (\x.x) (\x.x)
+#+begin_src agda
+    (\x.x) (\x.x)
+#+end_src
 
 is not in WHNF, because there is more reduction to go to get to the head. On the
 other hand, even though there are still internal reductions possible:
 
-:     \y. (\x.x) (\x.x)
+#+begin_src agda
+    \y. (\x.x) (\x.x)
+#+end_src
 
 and
 
-:     (y : Type) -> (\x.x) Bool
+#+begin_src agda
+    (y : Type) -> (\x.x) Bool
+#+end_src
 
 are in WHNF. Likewise, the term =x y= is also in WHNF (if we don't have a
 definition available for =x=) because, even though we don't know what the head
