@@ -1,0 +1,36 @@
+** Pi-Forall language
+
+This language implementation is designed to accompany four lectures at OPLSS
+during Summer 2014. Notes for these lectures are included in the distribution:
+
+- [[notes1.org][notes1]]: Basic language with Type:Type
+- [[notes2.org][notes2]]: Implementation of basic languages
+- [[notes3.org][notes3]]: Definitional and propositional equality
+- [[notes4.org][notes4]]: Datatypes, with parameters and indices, erased
+  arguments
+
+Videos for these lectures are also available from the [[https://www.cs.uoregon.edu/research/summerschool/summer14/curriculum.html][OPLSS website]].
+
+An abridged version of these lectures was given at the Compose Conference,
+January 2015.
+
+-  [[compose.md]]: Overview of pi-forall implementation
+
+These lecture notes corresponds to an increasingly expressive demo
+implementation of dependently-typed lambda calculus.
+
+-  [[version1/]]: Basic language implementation,
+-  [[version2/]]: Basic language extended with nontrivial definitional
+   equality
+-  [[full/]]: Full language with datatypes and erased arguments
+
+See also the implementation [[master/README.md][README.md]] for more details.
+
+All of these versions are excerpted from the marked up files in the directory:
+
+- [[master/]]
+
+All edits should be to the code in the =master= directory. The above versions
+are included in the repo just for convenience.
+
+-- Stephanie Weirich
