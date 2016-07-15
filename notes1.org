@@ -250,52 +250,52 @@ Let's redefine the system using two judgments: the standard judgement that we
 wrote above, called type inference, but make it depend on a checking judgement,
 that let's us take advantage of known type information.
 
-:     Γ ⊢ a ⇒ A    inferType     in context Γ, infer that a has type A
+:     Γ ⊢ a => A    inferType     in context Γ, infer that a has type A
 : 
-:     Γ ⊢ a ⇐ A    checkType     in context Γ, check that a has type A
+:     Γ ⊢ a <= A    checkType     in context Γ, check that a has type A
 
 We'll go back to some of our existing rules. For variables, we can just change
 the colon to an inference arrow. The context tells us the type to infer.
 
 :      x : A ∈ Γ
-:     ─────────── var
-:      Γ ⊢ x ⇒ A
+:     ──────────── var
+:      Γ ⊢ x => A
 
 On the other hand, we should check lambda expressions against a known type. If
 that type is provided, we can propagate it to the body of the lambda
 expression. We also know that we want A to be a type.
 
-:      Γ, x : A ⊢ a ⇐ B    Γ ⊢ A ⇐ Type
-:     ────────────────────────────────── lambda
-:          Γ ⊢ \x. a ⇐ (x : A) → B
+:      Γ, x : A ⊢ a <= B    Γ ⊢ A <= Type
+:     ──────────────────────────────────── lambda
+:          Γ ⊢ \x. a <= (x : A) → B
 
 Applications can be in inference mode (in fact, checking mode doesn't help.)
 Here we must infer the type of the function, but once we have that type, we may
 to use it to check the type of the argument.
 
-:       Γ ⊢ a ⇒ (x : A) → B
-:           Γ ⊢ b ⇐ A
+:       Γ ⊢ a => (x : A) → B
+:           Γ ⊢ b <= A
 :     ─────────────────────── app
-:      Γ ⊢ a b ⇒ B { b / x }
+:      Γ ⊢ a b => B { b / x }
 
 For types, it is apparent what their type is, so we will just continue to infer
 that.
 
-:      Γ ⊢ A ⇐ Type     Γ, x : A ⊢ B ⇐ Type
-:     ────────────────────────────────────── Pi
+:      Γ ⊢ A ⇐ Type    Γ, x : A ⊢ B ⇐ Type
+:     ───────────────────────────────────── pi
 :            Γ ⊢ (x : A) → B ⇒ Type
 : 
-:     ───────────────── type
-:      Γ ⊢ Type ⇒ Type
+:     ────────────────── type
+:      Γ ⊢ Type => Type
 
 Notice that this system is fairly incomplete. There are inference rules for
 every form of expression except for lambda. On the other hand, only lambda
 expressions can be checked against types. We can make checking more applicable
 by the following rule:
 
-:      Γ ⊢ a ⇒ A
-:     ───────────   (a does not have a checking rule)
-:      Γ ⊢ a ⇐ A 
+:      Γ ⊢ a => A
+:     ──────────── :: infer     (a does not have a checking rule)
+:      Γ ⊢ a <= A
 
 which allows us to use inference whenever checking doesn't apply.
 
@@ -305,8 +305,8 @@ system. What do they look like?
 
 Well, they involve applications of explicit lambda terms:
 
-:      ⊢ \x. x : bool -> bool    ⊢ true : bool
-:     ───────────────────────────────────────── app
+:      ⊢ \x. x : bool → bool    ⊢ true : bool
+:     ──────────────────────────────────────── app
 :               ⊢ (\x. x) true : bool
 
 This term doesn't type check in the bidirectional system because application
