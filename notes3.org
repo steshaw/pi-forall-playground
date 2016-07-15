@@ -458,6 +458,7 @@ snd : (A : Type) -> (B : A -> Type) -> (p : { x2 : A | B x2 }) -> B (fst A B p)
 snd = \A B p. pcase p of (x1, y) -> y
 #+end_src
 
+
 * Propositional equality
 
 You started proving things right away in Coq with an equality proposition. For
@@ -554,16 +555,20 @@ have different head forms. For now, we'll use:
       Γ ⊢ contra p : A
 #+end_example
 
+
+* Homework
+
 *** Homework (pi-forall: more church encodings)
 
-The file =version2/test/NatChurch.pi= is a start at a Church encoding of natural
+The file [[version2/test/NatChurch.pi]] is a start at a Church encoding of natural
 numbers. Replace the TRUSTMEs in this file so that it compiles.
 
 *** Homework (pi-forall: equality)
 
-Complete the file [[version2/test/Hw2.pi][Hw2.pi]]. This file gives you practice with working with
+Complete the file [[version2/test/Hw2.pi]]. This file gives you practice with working with
 equality propositions in pi-forall.
 
-** References
+
+* References
 
 -  [[http://homotopytypetheory.org/book/][HoTT book]], Sections 1.1 and 1.12
