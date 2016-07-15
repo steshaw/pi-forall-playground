@@ -295,45 +295,39 @@ checking a case expression =Case scrut alts= of type =ty= is as follows:
    expected type
 
 ** Datatypes with parameters
-   :PROPERTIES:
-   :CUSTOM_ID: datatypes-with-parameters
-   :END:
 
-The first extension of the above scheme is for /parameterized
-datatypes/. For example, in pi-forall we can define the =Maybe= type
-with the following declaration. The type parameter for this datatype =A=
-can be referred to in any of the telescopes for the data constructors.
+The first extension of the above scheme is for /parameterized datatypes/. For
+example, in pi-forall we can define the =Maybe= type with the following
+declaration. The type parameter for this datatype =A= can be referred to in any
+of the telescopes for the data constructors.
 
-#+BEGIN_EXAMPLE
-    data Maybe (A : Type) : Type where
-        Nothing 
-         Just of (A)
-         
-#+END_EXAMPLE
+#+begin_src haskell
+data Maybe (A : Type) : Type where
+  Nothing 
+  Just of (A)
+#+end_src
 
-Because this is a dependently-typed language, the variables in the
-telescope can be referred to later in the telescope. For example, with
-parameters, we can implement Sigma types as a datatype, instead of
-making them primitive:
+Because this is a dependently-typed language, the variables in the telescope can
+be referred to later in the telescope. For example, with parameters, we can
+implement Sigma types as a datatype, instead of making them primitive:
 
-#+BEGIN_EXAMPLE
-    data Sigma (A: Type) (B : A -> Type) : Type
-        Prod of (x:A) (B)
-#+END_EXAMPLE
+#+begin_src haskell
+data Sigma (A: Type) (B : A -> Type) : Type
+  Prod of (x:A) (B)
+#+end_src
 
-The general form of datatype declaration with parameters includes a
-telescope for the type constructor, as well as a telescope for each of
-the data constructors.
+The general form of datatype declaration with parameters includes a telescope
+for the type constructor, as well as a telescope for each of the data
+constructors.
 
-#+BEGIN_EXAMPLE
-    data T D : Type where
-       Ki of Di 
-#+END_EXAMPLE
+#+begin_src haskell
+data T D : Type where
+  Ki of Di
+#+end_src
 
-That means that when we check an occurrence of a type constructor, we
-need to make sure that its actual arguments match up the parameters in
-the telescope. For this, we can use the argument checking judgement
-above.
+That means that when we check an occurrence of a type constructor, we need to
+make sure that its actual arguments match up the parameters in the
+telescope. For this, we can use the argument checking judgement above.
 
 #+BEGIN_EXAMPLE
       T : D -> Type in Γ
@@ -351,7 +345,6 @@ actual arguments from the expected type:
       Γ ⊢ as : Di { bs / D }
         ------------------------ param-constr
         Γ ⊢ Ki as : T bs
-        
 #+END_EXAMPLE
 
 For example, if we are trying to check the expression =Just True=, with
@@ -364,105 +357,91 @@ In =TypeCheck.hs=, the function
 
 #+BEGIN_EXAMPLE
     substTele :: Telescope -> [ Term ] -> Telescope -> TcMonad Telescope
-     
 #+END_EXAMPLE
 
-implements this operation of substituting the actual data type arguments
-for the parameters.
+implements this operation of substituting the actual data type arguments for the
+parameters.
 
-Note that by checking the type of data constructor applications (instead
-of inferring them) we don't need to explicitly provide the parameters to
-the data constructor. The type system can figure them out from the
-provided type.
+Note that by checking the type of data constructor applications (instead of
+inferring them) we don't need to explicitly provide the parameters to the data
+constructor. The type system can figure them out from the provided type.
 
-Also note that checking mode also enables /data constructor
-overloading/. In other words, we can have multiple datatypes that use
-the same data constructor. Having the type available allows us to
-disambiguate.
+Also note that checking mode also enables /data constructor overloading/. In
+other words, we can have multiple datatypes that use the same data
+constructor. Having the type available allows us to disambiguate.
 
 For added flexibility we can also add code to /infer/ the types of data
-constructors when they are not actually parameterized (and when there is
-no ambiguity due to overloading).
+constructors when they are not actually parameterized (and when there is no
+ambiguity due to overloading).
 
 ** Datatypes with indices
-   :PROPERTIES:
-   :CUSTOM_ID: datatypes-with-indices
-   :END:
 
 The final step is to index our datatypes with constraints on the
-parameters. Indexed types let us express inductively defined relations,
-such as =beautiful= from Software Foundations.
+parameters. Indexed types let us express inductively defined relations, such as
+=beautiful= from Software Foundations.
 
-#+BEGIN_EXAMPLE
-    Inductive beautiful : nat → Prop :=
-      b_0 : beautiful 0
-    | b_3 : beautiful 3
-    | b_5 : beautiful 5
-    | b_sum : ∀n m, beautiful n → beautiful m → beautiful (n+m).
-#+END_EXAMPLE
+#+begin_src coq
+Inductive beautiful : nat → Prop :=
+    b_0 : beautiful 0
+  | b_3 : beautiful 3
+  | b_5 : beautiful 5
+  | b_sum : ∀n m, beautiful n → beautiful m → beautiful (n + m).
+#+end_src
 
-Even though =beautiful= has type =nat -> Prop=, we call =nat= this
-argument an index instead of a parameter because it is determined by
-each data constructor. It is not used uniformly in each case.
+Even though =beautiful= has type =nat → Prop=, we call =nat= this argument an
+index instead of a parameter because it is determined by each data
+constructor. It is not used uniformly in each case.
 
 In pi-forall, we'll implement indices by explictly /constraining/
-parameters. These constraints will just be expressed as equalities
-written in square brackets. In otherwords, we'll define =beautiful= this
-way:
+parameters. These constraints will just be expressed as equalities written in
+square brackets. In otherwords, we'll define =beautiful= this way:
 
-#+BEGIN_EXAMPLE
-    data Beautiful (n : Nat) : Type where
-        B0 of [n = 0]
-         B3 of [n = 3]
-         B5 of [n = 5]
-         Bsum of (m1:Nat)(m2:Nat)(Beautiful m1)(Beautiful m2)[m = m1+m2]
-         
-#+END_EXAMPLE
+#+begin_src haskell
+data Beautiful (n : Nat) : Type where
+  B0 of [n = 0]
+  B3 of [n = 3]
+  B5 of [n = 5]
+  Bsum of (m1 : Nat)(m2 : Nat)(Beautiful m1)(Beautiful m2)[m = m1 + m2]
+#+end_src
 
 Constraints can appear anywhere in the telescope of a data constructor.
-However, they are not arbitrary equality constraints---we want to
-consider them as deferred substitutions. So therefore, the term on the
-left must always be a variable.
+However, they are not arbitrary equality constraints---we want to consider them
+as deferred substitutions. So therefore, the term on the left must always be a
+variable.
 
 These constraints interact with the type checker in a few places:
 
--  When we use data constructors we need to be sure that the constraints
-   are satisfied, by appealing to definitional equality when we are
-   checking arguments against a telescope (in =tcArgTele=).
+- When we use data constructors we need to be sure that the constraints are
+  satisfied, by appealing to definitional equality when we are checking
+  arguments against a telescope (in =tcArgTele=).
 
-   #+BEGIN_EXAMPLE
+  #+BEGIN_EXAMPLE
        Γ ⊢ x = b      Γ ⊢ as : D
        --------------------------------------- tele-constraint
        Γ ⊢ as : (x = b) D     
-   #+END_EXAMPLE
+  #+END_EXAMPLE
 
--  When we substitute through telescopes (in =doSubst=), we may need to
-   rewrite a constraint =x = b= if we substitute for =x=.
+- When we substitute through telescopes (in =doSubst=), we may need to rewrite
+  a constraint =x = b= if we substitute for =x=.
 
--  When we add the pattern variables to the context in each alternative
-   of a case expression, we need to also add the constraints as
-   definitions. (see =declarePats=).
+- When we add the pattern variables to the context in each alternative of a
+  case expression, we need to also add the constraints as definitions. (see
+  =declarePats=).
 
 For example, if we check an occurrence of =B3=, i.e.
 
-#+BEGIN_EXAMPLE
-    threeIsBeautiful : Beautiful 3
-    threeIsBeautiful = B3
-     
-#+END_EXAMPLE
+#+begin_src haskell
+threeIsBeautiful : Beautiful 3
+threeIsBeautiful = B3
+#+end_src
 
-this requires substituting =3= for =n= in the telescope =[n = 3]=. That
-produces an empty telescope.
+this requires substituting =3= for =n= in the telescope =[n = 3]=. That produces
+an empty telescope.
 
 *** Homework: Parameterized datatypes and proofs: logic
-    :PROPERTIES:
-    :CUSTOM_ID: homework-parameterized-datatypes-and-proofs-logic
-    :END:
 
 Translate the definitions and proofs in
-[[http://www.cis.upenn.edu/~bcpierce/sf/current/Logic.html][Logic
-chapter of Software Foundations]] to pi-forall. See
-[[soln/test/Logic.pi][Logic.pi]] for a start.
+[[http://www.cis.upenn.edu/~bcpierce/sf/current/Logic.html][Logic chapter of Software Foundations]] to pi-forall. See [[full/test/Logic.pi]] for a start.
 
 *** Homework: Indexed datatypes: finite numbers in =Fin1.pi=
 
