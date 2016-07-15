@@ -21,15 +21,15 @@ more expressive than alpha-equivalence. Recall our encoding for the logical
 =and= proposition:
 
 #+begin_src agda
-    and : Type -> Type -> Type
-    and = \p. \q. (c : Type) -> (p -> q -> c) -> c
+and : Type -> Type -> Type
+and = \p. \q. (c : Type) -> (p -> q -> c) -> c
 #+end_src
 
 Unfortunately, our definition of =conj= still doesn't type check:
 
 #+begin_src agda
-    conj : (p : Type) -> (q : Type) -> p -> q -> and p q
-    conj = \p.\q. \x.\y. \c. \f. f x y
+conj : (p : Type) -> (q : Type) -> p -> q -> and p q
+conj = \p.\q. \x.\y. \c. \f. f x y
 #+end_src
 
 Running this example with =version1= of the type checker produces the following
@@ -66,8 +66,8 @@ that allows us to access the first element of the vector, as long as it is
 nonzero.
 
 #+begin_src agda
-    head : (A : Nat) -> (n : Nat) -> Vec A (succ n) -> Vec A n
-    head = ...
+head : (A : Nat) -> (n : Nat) -> Vec A (succ n) -> Vec A n
+head = ...
 #+end_src
 
 However, to call this function, we need to be able to show that the length of
@@ -75,8 +75,8 @@ the argument vector is equal to =succ n= for some n. This is ok if we know the
 length of the vector outright
 
 #+begin_src agda
-    v1 : Vec Bool (succ 0)
-    v1 = VCons True VNil
+v1 : Vec Bool (succ 0)
+v1 = VCons True VNil
 #+end_src
 
 So the application =head Bool 0 v1= will type check. (Note that pi-forall cannot
@@ -86,8 +86,8 @@ However, if we construct the vector, its length may not be a literal natural
 number:
 
 #+begin_src agda
-    append : (n : Nat) -> (m : Nat) -> Vec A m -> Vec A n -> Vec A (plus m n)
-    append = ...
+append : (n : Nat) -> (m : Nat) -> Vec A m -> Vec A n -> Vec A (plus m n)
+append = ...
 #+end_src
 
 In that case, to get =head Bool 1 (append v1 v1)= to type check, we need to show
@@ -196,7 +196,7 @@ The rules above /specify/ when terms should be equal, but they are not an
 algorithm. We actually need several different functions. First,
 
 #+begin_src haskell
-    equate :: Term -> Term -> TcMonad ()
+equate :: Term -> Term -> TcMonad ()
 #+end_src
 
 ensures that the two provided types are equal, or throws a type error if they
@@ -212,7 +212,7 @@ a pi type.
 We can determine this in two ways. Most directly, the function
 
 #+begin_src haskell
-    ensurePi :: Type -> TcMonad (TName, Type, Type)
+ensurePi :: Type -> TcMonad (TName, Type, Type)
 #+end_src
 
 checks the given type to see if it is equal to some  type of the form =(x:A1)
@@ -220,7 +220,7 @@ checks the given type to see if it is equal to some  type of the form =(x:A1)
 of a helper function:
 
 #+begin_src haskell
-    whnf :: Term -> TcMonad Term
+whnf :: Term -> TcMonad Term
 #+end_src
 
 that reduces a type to its /weak head normal form/ (WHNF). Such terms have done
@@ -228,20 +228,20 @@ all of the reductions to the outermost lambda abstraction (or pi) but do not
 reduce subterms. In other words:
 
 #+begin_src agda
-    (\x.x) (\x.x)
+(\x.x) (\x.x)
 #+end_src
 
 is not in WHNF, because there is more reduction to go to get to the head. On the
 other hand, even though there are still internal reductions possible:
 
 #+begin_src agda
-    \y. (\x.x) (\x.x)
+\y. (\x.x) (\x.x)
 #+end_src
 
 and
 
 #+begin_src agda
-    (y : Type) -> (\x.x) Bool
+(y : Type) -> (\x.x) Bool
 #+end_src
 
 are in WHNF. Likewise, the term =x y= is also in WHNF (if we don't have a
@@ -265,29 +265,29 @@ for equivalence.
 One way to do this is with the following algorithm:
 
 #+begin_src haskell
-    equate t1 t2 = do
-      nf1 <- reduce t1
-      nf2 <- reduce t2
-      aeq nf1 nf2
+equate t1 t2 = do
+  nf1 <- reduce t1
+  nf2 <- reduce t2
+  aeq nf1 nf2
 #+end_src
 
 However, we can do better. We'd like to only reduce as much as
 necessary. Sometimes we can equate the terms without completely reducing them.
 
 #+begin_src haskell
-    equate t1 t2 = do
-      when (aeq t1 t1) $ return ()
-      nf1 <- whnf t1  -- reduce only to 'weak head normal form'
-      nf2 <- whnf t2
-      case (nf1,nf2) of
-        (App a1 a2, App b1 b2) ->
-          -- make sure subterms are equal
-          equate a1 b1 >> equate a2 b2
-        (Lam bnd1, Lam bnd2) -> do
-          -- ignore variable name and typing annot (if present)
-          (_, b1, _, b2) <- unbind2Plus bnd1 bnd2
-          equate b1 b2
-        (_, _) -> err ...
+equate t1 t2 = do
+  when (aeq t1 t1) $ return ()
+  nf1 <- whnf t1  -- reduce only to 'weak head normal form'
+  nf2 <- whnf t2
+  case (nf1,nf2) of
+    (App a1 a2, App b1 b2) ->
+      -- make sure subterms are equal
+      equate a1 b1 >> equate a2 b2
+    (Lam bnd1, Lam bnd2) -> do
+      -- ignore variable name and typing annot (if present)
+      (_, b1, _, b2) <- unbind2Plus bnd1 bnd2
+      equate b1 b2
+    (_, _) -> err ...
 #+end_src
 
 Therefore, we reuse our mechanism for reducing terms to weak-head normal form.
@@ -373,13 +373,13 @@ or false.
 For example, here is a simple definition that requires this rule:
 
 #+begin_src agda
-    -- function from booleans to types
-    T : Bool -> Type
-    T = \b. if b then One else Bool
+-- function from booleans to types
+T : Bool -> Type
+T = \b. if b then One else Bool
 
-    -- returns unit when the argument is true
-    bar : (b : Bool) -> T b
-    bar = \b .if b then tt else True
+-- returns unit when the argument is true
+bar : (b : Bool) -> T b
+bar = \b .if b then tt else True
 #+end_src
 
 It turns out that this rule is difficult to implement without annotating the
@@ -446,16 +446,16 @@ This modification changes our definition of Sigma types from weak Sigmas to
 strong Sigmas. With either typing rule, we can define the first projection
 
 #+begin_src agda
-    fst : (A : Type) -> (B : A -> Type) -> (p : { x2 : A | B x2 }) -> A
-    fst = \A B p. pcase p of (x, y) -> x
+fst : (A : Type) -> (B : A -> Type) -> (p : { x2 : A | B x2 }) -> A
+fst = \A B p. pcase p of (x, y) -> x
 #+end_src
 
 But, weak Sigmas cannot define the second projection using pcase. The following
 code only type checks using the above rule.
 
 #+begin_src agda
-    snd : (A : Type) -> (B : A -> Type) -> (p : { x2 : A | B x2 }) -> B (fst A B p)
-    snd = \A B p. pcase p of (x1, y) -> y
+snd : (A : Type) -> (B : A -> Type) -> (p : { x2 : A | B x2 }) -> B (fst A B p)
+snd = \A B p. pcase p of (x1, y) -> y
 #+end_src
 
 * Propositional equality
@@ -464,7 +464,7 @@ You started proving things right away in Coq with an equality proposition. For
 example, in Coq, when you say
 
 #+begin_src coq
-    Theorem plus_O_n : forall n : nat, 0 + n = n
+Theorem plus_O_n : forall n : nat, 0 + n = n
 #+end_src
 
 You are using a built in type, =a = b= that represents the proposition that two
@@ -478,104 +478,92 @@ that two types are equal into a /type/ that is inhabited only when two
 types are equal. In other words, we can write the intro rule for this
 form as:
 
-#+BEGIN_EXAMPLE
-     Γ ⊢ a = b
-    ────────────────--- refl
-    Γ ⊢ refl : a = b
-     
-#+END_EXAMPLE
+#+begin_example
+         Γ ⊢ a = b
+    ────────────────── refl
+     Γ ⊢ refl : a = b
+#+end_example
 
 Sometimes, you might see the rule written as follows:
 
-#+BEGIN_EXAMPLE
-    ────────────────--- refl'
-    Γ ⊢ refl : a = a
-     
-#+END_EXAMPLE
+#+begin_example
+    ────────────────── refl'
+     Γ ⊢ refl : a = a
+#+end_example
 
 However, this rule will turn out to be equivalent to the above version.
 
-This /type/ is well-formed when both sides have the same type. In other
-words, when it implements /homogeneous/ equality.
+This /type/ is well-formed when both sides have the same type. In other words,
+when it implements /homogeneous/ equality.
 
-#+BEGIN_EXAMPLE
-    Γ ⊢ a : A    Γ ⊢ b : A
-    ────────────────────────- eq
-    Γ ⊢ a = b : Type
-     
-#+END_EXAMPLE
+#+begin_example
+     Γ ⊢ a : A    Γ ⊢ b : A
+    ──────────────────────── eq
+        Γ ⊢ a = b : Type
+#+end_example
 
 The elimination rule for propositional equality allows us to convert the
 type of one expression to another.
 
-#+BEGIN_EXAMPLE
-     Γ ⊢ a : A { a1 / x}   Γ ⊢ b : a1 = a2  
-    ────────────────────────────────- subst
-    Γ ⊢ subst  a by b : A { a2 / x }
-#+END_EXAMPLE
+#+begin_example
+     Γ ⊢ a : A { a1 / x}    Γ ⊢ b : a1 = a2
+    ──────────────────────────────────────── subst
+        Γ ⊢ subst  a by b : A { a2 / x }
+#+end_example
 
-How can we implement this rule? For simplicity, we'll play the same
-trick that we did with booleans, requiring that one of the sides of the
-equality be a variable.
+How can we implement this rule? For simplicity, we'll play the same trick that
+we did with booleans, requiring that one of the sides of the equality be a
+variable.
 
-#+BEGIN_EXAMPLE
-    Γ ⊢ a <= A { a1 / x }    Γ ⊢ b => x = a1
-     ────────────────────────────────────────--- subst-left
-     Γ ⊢ subst a by b => A 
+#+begin_example
+     Γ ⊢ a <= A { a1 / x }    Γ ⊢ b => x = a1
+    ────────────────────────────────────────── subst-left
+              Γ ⊢ subst a by b => A
 
-    Γ ⊢ a <= A { a1 / x }    Γ ⊢ b => a1 = x
-     ────────────────────────────────────────--- subst-right
-     Γ ⊢ subst a by b => A 
-#+END_EXAMPLE
+     Γ ⊢ a <= A { a1 / x }    Γ ⊢ b => a1 = x
+    ────────────────────────────────────────── subst-right
+              Γ ⊢ subst a by b => A
+#+end_example
 
-Note that our elimination form for equality is powerful. We can use it
-to show that propositional equality is symmetric and transitive.
+Note that our elimination form for equality is powerful. We can use it to show
+that propositional equality is symmetric and transitive.
 
-#+BEGIN_EXAMPLE
-    sym : (A:Type) -> (x:A) -> (y:A) -> (x = y) -> y = x
-    trans : (A:Type) -> (x:A) -> (y:A) -> (z:A) -> (x = z) -> (z = y) -> (x = y)
-#+END_EXAMPLE
+#+begin_src agda
+sym : (A : Type) -> (x : A) -> (y : A) -> (x = y) -> y = x
 
-Furthermore, we can also extend =subst=, the elimination form for
-propositional equality as we did for booleans. As above, this rule only
-applies when =b= is also a variable.
+trans : (A : Type) -> (x : A) -> (y : A) -> (z : A) -> (x = z) -> (z = y) -> (x = y)
+#+end_src agda
 
-#+BEGIN_EXAMPLE
-    Γ ⊢ a <= A { a1 / x } { refl / y }    Γ ⊢ y => x = a1
-     ──────────────────────────────────────────────────────── subst-left
-     Γ ⊢ subst a by y => A 
-#+END_EXAMPLE
+Furthermore, we can also extend =subst=, the elimination form for propositional
+equality as we did for booleans. As above, this rule only applies when =b= is
+also a variable.
 
-One last addition: =contra=. If we can somehow prove a false, then we
-should be able to prove anything. A contradiction is a proposition
-between two terms that have different head forms. For now, we'll use:
+#+begin_example
+     Γ ⊢ a <= A { a1 / x } { refl / y }    Γ ⊢ y => x = a1
+    ─────────────────────────────────────────────────────── subst-left
+                  Γ ⊢ subst a by y => A 
+#+end_example
 
-#+BEGIN_EXAMPLE
+One last addition: =contra=. If we can somehow prove a false, then we should be
+able to prove anything. A contradiction is a proposition between two terms that
+have different head forms. For now, we'll use:
+
+#+begin_example
      Γ ⊢ p : True = False
-    ────────────────────- contra
-     Γ ⊢ contra p : A
-#+END_EXAMPLE
+    ────────────────────── contra
+      Γ ⊢ contra p : A
+#+end_example
 
 *** Homework (pi-forall: more church encodings)
-    :PROPERTIES:
-    :CUSTOM_ID: homework-pi-forall-more-church-encodings
-    :END:
 
-The file =version2/test/NatChurch.pi= is a start at a Church encoding of
-natural numbers. Replace the TRUSTMEs in this file so that it compiles.
+The file =version2/test/NatChurch.pi= is a start at a Church encoding of natural
+numbers. Replace the TRUSTMEs in this file so that it compiles.
 
 *** Homework (pi-forall: equality)
-    :PROPERTIES:
-    :CUSTOM_ID: homework-pi-forall-equality
-    :END:
 
-Complete the file [[version2/test/Hw2.pi][Hw2.pi]]. This file gives you
-practice with working with equality propositions in pi-forall.
+Complete the file [[version2/test/Hw2.pi][Hw2.pi]]. This file gives you practice with working with
+equality propositions in pi-forall.
 
 ** References
-   :PROPERTIES:
-   :CUSTOM_ID: references
-   :END:
 
--  HoTT book, Sections 1.1 and 1.12
-   (http://homotopytypetheory.org/book/)
+-  [[http://homotopytypetheory.org/book/][HoTT book]], Sections 1.1 and 1.12
